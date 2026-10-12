@@ -1,6 +1,6 @@
 {
   "modelVersion": "6.1.0",
-  "description": "日程倒计时服务卡片 + 极简主应用",
+  "description": "HarmonyWhale：鸿蒙平板上的 AI Agent 客户端",
   "dependencies": {},
   "devDependencies": {}
 }
