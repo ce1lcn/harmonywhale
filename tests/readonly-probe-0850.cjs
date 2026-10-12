@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),ts=require(process.env.HVIGOR_TS||'typescript');
+const moduleProbe={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync('entry/src/main/ets/agent/ReadOnlyProbe.ets','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,{module:moduleProbe,exports:moduleProbe.exports,Date,JSON,Error,setTimeout});
+const {readOnlyProbe}=moduleProbe.exports;
+(async()=>{let clock=0,live=true,commands=[];const own=JSON.stringify({attributes:{bundleName:'com.harmonyloom.selfhdcprobe'},children:[{attributes:{id:'fixture_input',text:'private fixture body'}}]});
+const execute=async(cmd,timeout)=>{commands.push(cmd);assert.ok(timeout>0&&timeout<=8000);clock+=Math.min(1000,timeout);return cmd.startsWith('cat ')?own:''};
+let r=await readOnlyProbe('with-checks',execute,()=>live,()=>clock,async ms=>{clock+=ms});assert.ok(r.samples.length>1);assert.ok(r.samples.every(s=>s.ok));assert.ok(r.elapsedMs<=30000);assert.ok(commands.every(c=>c==='cat /data/local/tmp/readonly-0850.json'||c==='uitest dumpLayout -p /data/local/tmp/readonly-0850.json'));assert.ok(!JSON.stringify(r).includes('private'));
+clock=0;commands=[];r=await readOnlyProbe('without-checks',async(cmd,t)=>{commands.push(cmd);clock+=100;return cmd.startsWith('cat ')?'{':''},()=>live,()=>clock,async ms=>{clock+=ms});assert.ok(r.samples.every(s=>s.error==='INVALID_JSON'));
+clock=0;commands=[];r=await readOnlyProbe('with-checks',async(cmd,t)=>{commands.push(cmd);clock+=100;return cmd.startsWith('cat ')?JSON.stringify({attributes:{bundleName:'other'},children:[{attributes:{id:'fixture_input'}}]}):''},()=>live,()=>clock,async ms=>{clock+=ms});assert.equal(r.samples.length,1);assert.equal(r.samples[0].error,'SCOPE_CHANGED');
+clock=0;commands=[];r=await readOnlyProbe('with-checks',async(cmd,t)=>{commands.push(cmd);clock+=100;live=false;return ''},()=>live,()=>clock,async ms=>{clock+=ms});assert.equal(commands.length,1);
+await assert.rejects(()=>readOnlyProbe('arbitrary',execute,()=>true),/未知/);
+console.log('PASS: native read-only contrast fixed commands, deadline, own fixture scope, no content logging, invalid JSON, cancellation.');
+})().catch(e=>{console.error(e);process.exitCode=1});

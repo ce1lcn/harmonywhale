@@ -1,0 +1,14 @@
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert/strict');
+const ts=require(process.env.HVIGOR_TS||'typescript'),cache=new Map();
+const kit={'@kit.BackgroundTasksKit':{backgroundTaskManager:{requestSuspendDelay:()=>({requestId:1,actualDelayTime:180000}),cancelSuspendDelay(){}}},'@kit.ArkTS':{buffer:Buffer}};
+function load(file){file=path.resolve(file);if(cache.has(file))return cache.get(file);const module={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,{module,exports:module.exports,require:n=>n.startsWith('.')?load(path.resolve(path.dirname(file),n+'.ets')):kit[n]??{},setTimeout:(f,ms)=>ms>5000?0:setTimeout(f,0),clearTimeout,Uint8Array,ArrayBuffer,Map,Set,Buffer});cache.set(file,module.exports);return module.exports;}
+const root='entry/src/main/ets/agent/',T=load(root+'Types.ets'),{Engine}=load(root+'Engine.ets'),M=load(root+'Model.ets');
+function fixture(){const state=T.defaults(),device={mutationCount:0,hdc:{ready:true},active:()=>true,invalidate(){},sensitive:()=>false,observe:async()=>{throw Error('chat must not observe device');}};return {state,engine:new Engine(state,{save(){},secret:async()=> 'fixture'},device,()=>{})};}
+(async()=>{
+ let f=fixture();f.engine.model.next=async()=>{throw M.ModelNetworkError?new M.ModelNetworkError(false):new Error('模型网络请求中断，已保留收到的正文');};await f.engine.start('今天杭州天气怎么样');assert.equal(f.engine.current.status,'completed');assert.equal(f.engine.current.outcome,'blocked');assert.match(f.engine.current.reason,/系统连接提示.*没能联网核实/);assert.equal(f.engine.running,false);
+ f=fixture();f.engine.model.next=async()=>{f.engine.model.onText('收到一半');throw new M.ModelNetworkError(true);};await f.engine.start('解释一个问题');assert.equal(f.engine.current.status,'paused');assert.equal(f.engine.current.replyIncomplete,true);assert.ok(f.state.sessions[0].messages.some(m=>m.text==='收到一半'));
+ f=fixture();f.engine.model.next=async()=>{f.engine.current.deviceUsed=true;throw new M.ModelNetworkError(false);};await f.engine.start('操作任务');assert.equal(f.engine.current.status,'paused');
+ f=fixture();f.engine.model.next=async()=>{throw new Error('模型 HTTP 401');};await f.engine.start('普通问题');assert.equal(f.engine.current.status,'paused');assert.match(f.engine.current.reason,/401/);
+ f=fixture();f.engine.model.next=async()=>{f.engine.pause('用户取消',true);throw new M.ModelNetworkError(false);};await f.engine.start('联网查询');assert.equal(f.engine.current.status,'cancelled');
+ console.log('PASS: initial model network failure ends with explicit local notice; partial replies, device progress, authentication failures and cancellation retain their proper states.');
+})().catch(e=>{console.error(e);process.exit(1);});

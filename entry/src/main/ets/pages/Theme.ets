@@ -1,0 +1,21 @@
+// 视觉令牌：沿用 DSH / DeepSeek 的浅色基调——白色主区、浅灰侧栏、#4D6BFE 强调色、大圆角。
+export const BLUE: string = '#4D6BFE';
+export const BLUE_SOFT: string = '#EAF0FF';
+export const BLUE_LINE: string = '#C9D6FF';
+export const BLUE_DEEP: string = '#2F4BDB';
+export const INK: string = '#1F2024';
+export const INK2: string = '#555963';
+export const INK3: string = '#8A8F98';
+export const LINE: string = '#E6E8EC';
+export const WHITE: string = '#FFFFFF';
+export const SIDEBAR: string = '#F6F7F9';
+export const SURFACE: string = '#F6F7F9';
+export const SELECTED: string = '#E8EDFF';
+export const GREEN: string = '#00B42A';
+export const ORANGE: string = '#E8730C';
+export const ORANGE_SOFT: string = '#FFF3E8';
+export const RED: string = '#F53F3F';
+export const CHAT_WIDTH: number = 700;
+export const SIDEBAR_WIDTH: number = 310;
+export const GOLD: string = '#F5A400';
+export const HEAT: string[] = ['#F1F2F5', '#CBE3FB', '#6FB1F7', '#1A82F7', '#0B4A96'];

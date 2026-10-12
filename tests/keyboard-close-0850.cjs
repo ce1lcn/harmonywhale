@@ -1,0 +1,14 @@
+const assert=require('assert/strict'),{findKeyboardClose}=require('../scripts/keyboard-close.cjs');
+const n=(a,children=[])=>({attributes:a,children}),img=(id,bounds)=>n({type:'Image',id,bounds});
+const clip=img('clipboardSimpleCloseIcon','[1996,1127][2055,1186]');
+const keyboard=children=>n({bundleName:'com.huawei.hmos.inputmethod'},children);
+assert.equal(findKeyboardClose(keyboard([clip])).phase,'clipboard');
+assert.equal(findKeyboardClose(n({bundleName:'other'},[clip])),null);
+assert.equal(findKeyboardClose(keyboard([clip,clip])),null);
+const grid=n({id:'kbd_toolbar_list_menu',bounds:'[973,1079][1951,1187]'}),line=img('downMenu_line','[1895,1100][1897,1168]'),close=n({id:'KeyHideKbd',type:'Stack',bounds:'[1951,1080][2059,1188]'},[img('','[1969,1098][2041,1170]')]);
+const toolbar=children=>n({id:'downMenu_flex'},children);
+assert.equal(findKeyboardClose(keyboard([toolbar([grid,line,close])])).phase,'collapse');
+assert.equal(findKeyboardClose(keyboard([close])),null);
+assert.equal(findKeyboardClose(keyboard([toolbar([grid,line,close,close])])),null);
+assert.equal(findKeyboardClose(keyboard([toolbar([grid,line,img('','[980,1100][1050,1170]')])])),null);
+console.log('PASS keyboard-close: only verified clipboard/toolbar controls, ambiguous/wrong-app/missing anchors rejected.');

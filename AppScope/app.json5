@@ -1,0 +1,10 @@
+{
+  "app": {
+    "versionCode": 8604,
+    "bundleName": "com.harmonyloom.selfhdcprobe",
+    "icon": "$media:probe_icon",
+    "versionName": "0.8.6.4",
+    "label": "$string:app_name",
+    "vendor": "harmonyloom"
+  }
+}

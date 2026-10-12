@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert/strict');
+const ts=require(process.env.HVIGOR_TS||'typescript'),cache=new Map();
+function load(file){file=path.resolve(file);if(cache.has(file))return cache.get(file);const module={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,{module,exports:module.exports,require:n=>n.startsWith('.')?load(path.resolve(path.dirname(file),n+'.ets')):{},setTimeout,clearTimeout});cache.set(file,module.exports);return module.exports;}
+const root='entry/src/main/ets/agent/',{Device}=load(root+'Device.ets'),{snapshot}=load(root+'Elements.ets'),{builtins,validate}=load(root+'Registry.ets');
+const tree={attributes:{type:'Canvas',id:'canvas',bounds:'[100,100][900,900]',enabled:'true'},children:[]};
+function fixture(){const issued=[],d=new Device({execute:async cmd=>{issued.push(cmd);return cmd==='aa dump -l'?'AbilityRecord ID 1\nstate #FOREGROUND\nbundle name [paint]':'No Error';}},{});d.width=d.height=1000;d.latest=snapshot(tree,1000,1000);d.observe=async()=>{d.latest=snapshot(tree,1000,1000);return {};};d.readLayout=async()=>snapshot(tree,1000,1000);return {d,issued,args:{snapshotId:d.latest.snapshotId,canvasElementId:d.latest.elements[0].elementId,strokesJson:'[[[200,200],[300,300],[400,300]]]'}};}
+(async()=>{
+ const def=builtins().find(d=>d.name==='draw_path');assert.ok(def&&!def.readOnly);assert.ok(!builtins(['draw_path']).find(d=>d.name==='draw_path').enabled);assert.throws(()=>validate(def,{strokesJson:'[]',tool:'pen'}));
+ let f=fixture();assert.match(await f.d.execute('draw_path',f.args),/没有电容笔压力/);assert.equal(f.issued.filter(c=>c.startsWith('uinput')).length,2);assert.equal(f.d.mutationCount,2);
+ f=fixture();f.args.strokesJson='[[[200,200],[300,300]],[[950,950],[400,300]]]';await assert.rejects(()=>f.d.execute('draw_path',f.args),/边界/);assert.equal(f.d.mutationCount,0);
+ f=fixture();f.args.snapshotId='old';await assert.rejects(()=>f.d.execute('draw_path',f.args),/观察/);assert.equal(f.issued.length,0);
+ f=fixture();f.d.observe=async()=>{f.d.latest=snapshot(tree,2000,1000);return {};};await assert.rejects(()=>f.d.execute('draw_path',f.args),/画面变化/);assert.equal(f.d.mutationCount,0);
+ f=fixture();f.d.hdc.execute=async cmd=>{f.issued.push(cmd);if(cmd.startsWith('uinput'))f.d.active=()=>false;return cmd==='aa dump -l'?'AbilityRecord ID 1\nstate #FOREGROUND\nbundle name [paint]':'No Error';};await assert.rejects(()=>f.d.execute('draw_path',f.args),/暂停/);assert.equal(f.d.mutationCount,1);
+ f=fixture();f.d.hdc.execute=async cmd=>{f.issued.push(cmd);if(cmd.startsWith('uinput'))throw new Error('timeout');return 'AbilityRecord ID 1\nstate #FOREGROUND\nbundle name [paint]';};await assert.rejects(()=>f.d.execute('draw_path',f.args),/timeout/);assert.equal(f.d.mutationCount,1);
+ f=fixture();const control={attributes:{type:'Button',id:'b',text:'delete',clickable:'true',bounds:'[240,240][260,260]'}};f.d.observe=async()=>{f.d.latest=snapshot({...tree,children:[control]},1000,1000);return {};};f.d.latest=snapshot({...tree,children:[control]},1000,1000);f.args.snapshotId=f.d.latest.snapshotId;await assert.rejects(()=>f.d.execute('draw_path',f.args),/控件/);assert.equal(f.d.mutationCount,0);
+ console.log('PASS: drawing registration, full-path validation before writes, stale/rotation rejection, control crossing, pause between segments, and no replay after command timeout.');
+})().catch(e=>{console.error(e);process.exit(1);});

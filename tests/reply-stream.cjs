@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const ts=require(process.env.HVIGOR_TS||'typescript');
+const mod={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync('entry/src/main/ets/agent/ReplyStream.ets','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,{module:mod,exports:mod.exports,require:()=>({buffer:Buffer}),Uint8Array});const {ReplyStream}=mod.exports;
+const encode=e=>'data: '+JSON.stringify(e)+'\n\n';
+const feed=(p,s)=>{const bytes=Buffer.from(s);for(const byte of bytes)p.feed(Uint8Array.of(byte).buffer,()=>{});};
+let p=new ReplyStream();feed(p,encode({choices:[{delta:{content:'你好，中文不会乱码'}}]}));assert.equal(p.text,'你好，中文不会乱码');assert.equal(p.validatedCalls().length,0);
+feed(p,encode({choices:[{delta:{tool_calls:[{index:0,id:'call1',function:{name:'click_element',arguments:'{"snapshot'}}]}}]}));assert.equal(p.validatedCalls().length,0);
+feed(p,encode({choices:[{delta:{tool_calls:[{index:0,function:{arguments:'Id":"s","elementId":"e1"}'}}]},finish_reason:'tool_calls'}]}));assert.equal(p.validatedCalls().length,0);
+feed(p,'data: [DONE]\n\n');assert.equal(p.validatedCalls()[0].name,'click_element');assert.equal(JSON.parse(p.validatedCalls()[0].arguments).elementId,'e1');
+p=new ReplyStream();feed(p,encode({choices:[{delta:{tool_calls:[{index:1,id:'hole',function:{name:'home',arguments:'{}'}}]},finish_reason:'tool_calls'}]})+'data: [DONE]\n\n');assert.throws(()=>p.validatedCalls(),/未完整/);
+p=new ReplyStream();feed(p,encode({choices:[{delta:{content:'部分'},finish_reason:'length'}]})+'data: [DONE]\n\n');assert.equal(p.text,'部分');assert.equal(p.finish,'length');assert.equal(p.validatedCalls().length,0);
+p=new ReplyStream();assert.throws(()=>feed(p,'data: {bad}\n\n'));assert.throws(()=>feed(new ReplyStream(),encode({error:{message:'provider error'}})),/流式错误/);
+console.log('PASS: bytewise UTF8/SSE, partial tools never execute, complete fragmented tools, sparse indices, truncation and error frames');

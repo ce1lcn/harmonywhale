@@ -1,0 +1,10 @@
+const fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict');
+const {generate}=require('../scripts/build-secrets.cjs');
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'harmony-build-secrets-'));
+const root=path.join(temp,'project');fs.mkdirSync(path.join(root,'entry/src/main/ets/agent'),{recursive:true});fs.mkdirSync(path.join(root,'AppScope'));
+fs.writeFileSync(path.join(root,'AppScope/app.json5'),'{app:{versionName:"fixture"}}');
+const secret=path.join(temp,'local-secrets.json5');fs.writeFileSync(secret,'{ // outside project\n bochaKey: "fixture-key", }');
+generate(root,secret);const output=path.join(root,'entry/src/main/ets/agent/BuildSecrets.ets');assert.match(fs.readFileSync(output,'utf8'),/fixture-key/);assert.match(fs.readFileSync(output,'utf8'),/APP_VERSION:string="fixture"/);
+assert.throws(()=>generate(root,path.join(root,'local-secrets.json5')),/outside/);
+generate(root);assert.ok(!fs.readFileSync(output,'utf8').includes('fixture-key'));assert.ok(!fs.existsSync(path.join(root,'entry/src/main/resources/rawfile/local-secrets.json5')));
+console.log('PASS: external JSON5, no rawfile secret, same-project rejection and stale credential removal. Fixture credentials only.');

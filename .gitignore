@@ -1,0 +1,39 @@
+# --- 本机密钥：构建必需，但不提交 ---
+# 复制 entry/src/main/ets/agent/BuildSecrets.ets.example 为同目录下的 BuildSecrets.ets 并填入自己的值
+entry/src/main/ets/agent/BuildSecrets.ets
+local-secrets.json5
+
+# --- HarmonyOS / DevEco ---
+/node_modules
+/oh_modules
+/local.properties
+/.idea
+**/build
+/.hvigor
+/.cxx
+.cxx
+/.clangd
+/.clang-format
+/.clang-tidy
+**/.test
+/.appanalyzer
+
+# --- 验收证据、发布包与第三方研究副本 ---
+artifacts/
+releases/
+research/
+*.hap
+*.hsp
+*.app
+*.log
+
+# --- 模型密钥与本地凭据 ---
+.env
+.env.*
+*.key
+*.pem
+
+# --- 系统 ---
+.DS_Store
+Thumbs.db
+desktop.ini

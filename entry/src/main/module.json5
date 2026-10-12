@@ -1,0 +1,34 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "mainElement": "ProbeAbility",
+    "deviceTypes": [
+      "tablet"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      },
+      {
+        "name": "ohos.permission.VIBRATE"
+      },
+      {
+        "name": "ohos.permission.PRIVACY_WINDOW"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "ProbeAbility",
+        "srcEntry": "./ets/entryability/ProbeAbility.ets",
+        "exported": true,
+        "skills": [{"entities": ["entity.system.home"], "actions": ["ohos.want.action.home"]}],
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');const ts=require(process.env.HVIGOR_TS||'typescript');const moduleObj={exports:{}};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('entry/src/main/ets/agent/Branch.ets','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,{module:moduleObj,exports:moduleObj.exports,require:()=>({})});
+const {branchFiles}=moduleObj.exports,id=n=>n.toString(36)+'-fixture';const old={id:id(200),records:[{args:'{}',result:'fileId='+id(250)}]},future={id:id(300),records:[{args:'{}',result:'fileId='+id(350)}]};const s={tasks:[old,future],fileIds:[id(100),id(250),id(350),id(400)]};
+assert.equal(JSON.stringify(branchFiles(s,old)),JSON.stringify([id(100),id(250)]));old.fileIdsSnapshot=[id(100)];const result=branchFiles(s,old);assert.equal(JSON.stringify(result),JSON.stringify([id(100)]));result.push('other');assert.equal(old.fileIdsSnapshot.length,1);assert.equal(branchFiles(s,{id:'missing',records:[]}).length,0);
+console.log('PASS: branch exact snapshot, legacy imported/referenced files, future artifact isolation and independent arrays');

@@ -1,0 +1,13 @@
+const assert=require('assert/strict'),{maximizeTarget}=require('../scripts/self-window.cjs');
+const n=(a,children=[])=>({attributes:a,children});
+const own=n({bundleName:'com.harmonyloom.selfhdcprobe',id:'ContainerModalStack',bounds:'[1982,320][2737,1582]'});
+const button=(id='floatingButtonMaximize',bounds='[2003,252][2051,301]')=>n({bundleName:'com.ohos.sceneboard',type:'Button',id,bounds});
+const tree=(...nodes)=>n({},nodes);
+assert.deepEqual(maximizeTarget(tree(own,button())),[2003,252,2051,301]);
+assert.equal(maximizeTarget(tree(own,button(),button())),null);
+assert.equal(maximizeTarget(tree(own,button('floatingButtonClose'))),null);
+assert.equal(maximizeTarget(tree(own,button('floatingButtonMaximize','[100,100][150,150]'))),null);
+assert.equal(maximizeTarget(tree(own,button(),n({bundleName:'com.huawei.hmos.inputmethod'}))),null);
+assert.equal(maximizeTarget(tree(own,button(),n({bundleName:'other'}))),null);
+assert.equal(maximizeTarget(tree(button())),null);
+console.log('PASS own-window maximize: unique nearby button only; other apps, keyboard, close/minimize and ambiguous targets rejected.');
