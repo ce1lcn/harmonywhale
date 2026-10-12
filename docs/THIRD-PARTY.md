@@ -24,6 +24,19 @@ License: MIT. Research checkout is not included in HAP.
 
 SettingsShell and PlusPanel are native implementations of the user-approved design; no DSH UI code copied. Full license follows.
 
+## 图片素材
+
+以下图片由 OpenAI 的图像生成功能（GPT Image）生成，用于本项目的界面与图标。
+它们**不在**根目录 `LICENSE` 的授权范围内：
+
+| 文件 | 用途 |
+| --- | --- |
+| `entry/src/main/resources/base/media/avatar.jpg` | 界面中的角色头像 |
+| `entry/src/main/resources/base/media/startIcon.png` | 应用启动图标 |
+| `AppScope/resources/base/media/probe_icon.png` | 应用图标 |
+
+如需在自己的项目或产品中使用这些图片，请自行确认是否具备相应权利。
+
 ```text
 MIT License
 

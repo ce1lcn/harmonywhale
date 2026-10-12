@@ -103,4 +103,4 @@ node tests/guard-0838.cjs
 
 ## License
 
-[MIT](LICENSE)
+本项目采用**非商业许可**：可以阅读、学习和修改，也可以在非商业目的下分发，但**任何商业用途都需要事先取得授权**。第三方部分（改写自 DeepSeek Harness 的代码）仍遵循其原有 MIT 许可，详见 [LICENSE](LICENSE) 与 [docs/THIRD-PARTY.md](docs/THIRD-PARTY.md)。

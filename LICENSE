@@ -1,21 +1,55 @@
-MIT License
+# HarmonyWhale 许可协议
 
-Copyright (c) 2026 ce1lcn
+版权所有 (c) 2026 ce1lcn。保留所有权利。
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## 一、允许的用途
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+在遵守本协议的前提下，你可以：
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. 阅读、学习、研究本项目的源代码；
+2. 为满足自己的需要而修改源代码；
+3. 在**非商业**目的下复制并分发本项目的完整副本，但必须附带本许可协议与版权声明；
+4. 提交问题报告与改进建议。
+
+## 二、需要事先授权的用途
+
+以下用途**必须事先取得版权持有人的书面授权**：
+
+1. 将本项目或其修改版用于任何商业目的，包括但不限于销售、租赁、付费服务、
+   随商业产品分发，或用于商业产品的生产环境；
+2. 以本项目为基础提供任何形式的商业服务；
+3. 将本项目或其修改版改用其他许可协议重新发布。
+
+如需商业授权，请通过项目的 GitHub Issues 联系。
+
+## 三、第三方部分
+
+本项目的部分设计思路与代码改写自 DeepSeek Harness（DSH）。这些部分遵循其原有的
+**MIT 许可**，版权归原作者所有，许可文本与来源登记见 `docs/THIRD-PARTY.md`。
+本协议不改变、也不限制你在该 MIT 许可下已经获得的权利。
+
+界面使用的图片素材由图像生成工具产出，其来源登记同样见 `docs/THIRD-PARTY.md`。
+
+## 四、免责声明
+
+本软件按「现状」提供，不附带任何明示或暗示的担保，包括但不限于对适销性、
+特定用途适用性与非侵权的担保。在任何情况下，作者或版权持有人均不对因本软件
+或本软件的使用而产生的任何索赔、损害或其他责任负责。
+
+---
+
+# License (English summary)
+
+Copyright (c) 2026 ce1lcn. All rights reserved.
+
+You may read, study, modify and redistribute this software **for non-commercial
+purposes**, provided that this license and the copyright notice are retained.
+
+**Commercial use of any kind requires prior written permission from the copyright
+holder.**
+
+Portions of this project are adapted from DeepSeek Harness (DSH) and remain under
+their original MIT license; see `docs/THIRD-PARTY.md`. This license does not alter
+the rights granted to you under that MIT license.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
