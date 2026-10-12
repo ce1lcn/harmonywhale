@@ -74,7 +74,10 @@ docs/                 技术文档
 
 1. 用 DevEco Studio 打开本仓库根目录
 2. 配置签名：`File → Project Structure → Signing Configs`，勾选 Automatically generate signature（需登录华为账号），或填入自己的证书与 Profile。**本仓库不包含任何签名材料**
-3. 复制 `entry/src/main/ets/agent/BuildSecrets.ets.example` 为同目录下的 `BuildSecrets.ets`，按需填写联网搜索的 Key（留空也能用降级通道）
+3. 准备 `BuildSecrets.ets`（已在 `.gitignore` 中，不会提交）：
+   - **构建时会自动生成**：`hvigorfile.ts` 会调用 `scripts/build-secrets.cjs`，把 `AppScope/app.json5` 里的版本号写进去；若设置了环境变量 `HARMONY_SEARCH_SECRETS`（指向工程外一个含 `bochaKey` 的 JSON5 文件），同时写入搜索 Key，否则该字段为空、联网搜索走无 Key 的降级通道
+   - 也可以手动复制 `BuildSecrets.ets.example` 填写，但**下次构建若没有提供该环境变量，脚本会用空值重新生成、覆盖手填内容**
+   - 该脚本需要能解析 `json5`：设置 `HVIGOR_JSON5` 指向它，或在项目环境里安装该模块
 4. 在平板上开启开发者模式与无线调试，安装应用后选择一次信任
 5. 在设置里填入模型的 HTTPS Base URL、模型名与 Key
 

@@ -35,7 +35,9 @@ SettingsShell and PlusPanel are native implementations of the user-approved desi
 | `entry/src/main/resources/base/media/startIcon.png` | 应用启动图标 |
 | `AppScope/resources/base/media/probe_icon.png` | 应用图标 |
 
-如需在自己的项目或产品中使用这些图片，请自行确认是否具备相应权利。
+本仓库只说明这些图片的来源，以及它们**不在代码许可范围内**这一事实，**并未另外授予**任何图片使用许可。如需在自己的项目或产品中使用，请自行确认是否具备相应权利。
+
+### 附：DeepSeek Harness 的 MIT 许可全文
 
 ```text
 MIT License
